@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="styles.css">
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
   </head>
@@ -12,19 +13,38 @@
         var getTweets = function () {
           
           var $body = $('body');
-            $body.html('');var index = streams.home.length - 1;
-            while(index >= 0) {
+          $body.html(''); // clears page on refreh
+          var index = streams.home.length - 1;
+
+          while(index >= 0) {
             var tweet = streams.home[index];
             var $tweet = $('<div></div>');
-            $tweet.text(tweet.created_at + ' @' + tweet.user + ': ' + tweet.message);
+            $tweet.text(tweet.created_at + ' @' + tweet.user + ': ' + tweet.message).addClass(tweet.user);
             $tweet.appendTo($body);
             index -= 1;
           }
+
         };
 
-        getTweets();
+        getTweets(); //loads tweets on page load
 
-        setInterval(getTweets, 1000);
+        var interval = setInterval(getTweets, 1000); //calls the function
+
+        var timeline = $('body').on('click', 'div', function () { // allows user to view someone's timeline
+          var divClass = $(this).attr('class'); // obtains divs class
+          var classFilter = streams.users[divClass]; // allows lookup of div class on streams.users
+          var $body = $('body');
+          $body.html('');
+
+           for (var key in classFilter) {
+            var $tweet = $('<div></div>');             
+            $tweet.text(classFilter[key].created_at + ' @' + classFilter[key].user + ': ' + classFilter[key].message)
+            $tweet.prependTo($body); // prepends to show reverse chronological order
+           }
+
+          clearInterval(interval); // ends setInterval
+
+        });
 
       });
 
